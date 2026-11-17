@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "FxTermuxTui"
+version = "0.1.0"
+description = "FxTermuxTui: TUI for Termux"
+requires-python = ">=3.10"
+dependencies = [
+  "textual",
+  "textual-tty",
+]
+license = { file = "LICENSE" }
+[project.scripts]
+FxTermuxTui = "FxTermuxTui.FxTermuxTui:main"
+

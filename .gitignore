@@ -1,0 +1,24 @@
+# 打包发布产物
+dist/
+build/
+*.egg-info/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 环境与密钥
+.venv/
+venv/
+.env
+*.token
+
+# 编辑器、系统文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
