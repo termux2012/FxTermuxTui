@@ -97,7 +97,7 @@ class FxTermuxTui(App):
             "uninstall": ("包名", "", "", ""),
         },
         "pip": {
-            "install": ("包名", "", "", ""),
+            "install": ("包名", "", "附加参数（如 --upgrade）", ""),
             "uninstall": ("包名", "", "", ""),
         },
         "npm": {
@@ -226,7 +226,7 @@ class FxTermuxTui(App):
 
     def run_downloads_action(self, tool: str, action: str) -> None:
         spec = self.SPEC
-        if tool not in spec or action not in spec:
+        if tool not in spec or action not in spec[tool]:
             return
         p1, d1, p2, d2 = spec[tool][action]
 
@@ -235,10 +235,10 @@ class FxTermuxTui(App):
                 return
             v1, v2 = res
             cmd_parts = [tool, action]
-            if v1:
-                cmd_parts.append(v1)
-            if v2:
-                cmd_parts.append(v2)
+            if v1.strip():
+                cmd_parts.append(v1.strip())
+            if v2.strip():
+                cmd_parts.extend(v2.strip().split())
             self.send_command_to_terminal(" ".join(cmd_parts))
 
         if not p1 and not p2:
@@ -325,66 +325,76 @@ class FxTermuxTui(App):
                 self.clear_menu()
                 c = self.get_menu_container()
                 for a in self.SPEC["apt"]:
-                    c.mount(Button(a, id=a))
+                    c.mount(Button(a, id=f"apt_{a}"))
                 c.mount(Button("返回", id="back_apt"))
             elif bid == "pkg":
                 self.menu_state = "pkg_sub"
                 self.clear_menu()
                 c = self.get_menu_container()
                 for a in self.SPEC["pkg"]:
-                    c.mount(Button(a, id=a))
+                    c.mount(Button(a, id=f"pkg_{a}"))
                 c.mount(Button("返回", id="back_pkg"))
             elif bid == "cargo":
                 self.menu_state = "cargo_sub"
                 self.clear_menu()
                 c = self.get_menu_container()
                 for a in self.SPEC["cargo"]:
-                    c.mount(Button(a, id=a))
+                    c.mount(Button(a, id=f"cargo_{a}"))
                 c.mount(Button("返回", id="back_cargo"))
             elif bid == "pip":
                 self.menu_state = "pip_sub"
                 self.clear_menu()
                 c = self.get_menu_container()
                 for a in self.SPEC["pip"]:
-                    c.mount(Button(a, id=a))
+                    c.mount(Button(a, id=f"pip_{a}"))
                 c.mount(Button("返回", id="back_pip"))
             elif bid == "npm":
                 self.menu_state = "npm_sub"
                 self.clear_menu()
                 c = self.get_menu_container()
                 for a in self.SPEC["npm"]:
-                    c.mount(Button(a, id=a))
+                    c.mount(Button(a, id=f"npm_{a}"))
                 c.mount(Button("返回", id="back_npm"))
             elif bid == "back_downloads_root":
                 self.show_tools_menu()
 
         elif self.menu_state == "apt_sub":
-            if bid in self.SPEC["apt"]:
-                self.run_downloads_action("apt", bid)
+            prefix = "apt_"
+            if bid.startswith(prefix):
+                action = bid.removeprefix(prefix)
+                self.run_downloads_action("apt", action)
             elif bid == "back_apt":
                 self.show_downloads_submenu()
 
         elif self.menu_state == "pkg_sub":
-            if bid in self.SPEC["pkg"]:
-                self.run_downloads_action("pkg", bid)
+            prefix = "pkg_"
+            if bid.startswith(prefix):
+                action = bid.removeprefix(prefix)
+                self.run_downloads_action("pkg", action)
             elif bid == "back_pkg":
                 self.show_downloads_submenu()
 
         elif self.menu_state == "cargo_sub":
-            if bid in self.SPEC["cargo"]:
-                self.run_downloads_action("cargo", bid)
+            prefix = "cargo_"
+            if bid.startswith(prefix):
+                action = bid.removeprefix(prefix)
+                self.run_downloads_action("cargo", action)
             elif bid == "back_cargo":
                 self.show_downloads_submenu()
 
         elif self.menu_state == "pip_sub":
-            if bid in self.SPEC["pip"]:
-                self.run_downloads_action("pip", bid)
+            prefix = "pip_"
+            if bid.startswith(prefix):
+                action = bid.removeprefix(prefix)
+                self.run_downloads_action("pip", action)
             elif bid == "back_pip":
                 self.show_downloads_submenu()
 
         elif self.menu_state == "npm_sub":
-            if bid in self.SPEC["npm"]:
-                self.run_downloads_action("npm", bid)
+            prefix = "npm_"
+            if bid.startswith(prefix):
+                action = bid.removeprefix(prefix)
+                self.run_downloads_action("npm", action)
             elif bid == "back_npm":
                 self.show_downloads_submenu()
 
@@ -395,4 +405,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
